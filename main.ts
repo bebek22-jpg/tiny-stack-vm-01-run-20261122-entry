@@ -1,6 +1,13 @@
 import{mkdirSync,readdirSync,readFileSync,writeFileSync}from'node:fs';
 import{join}from'node:path';
 const I=process.env.MAKEFUN_INPUT_DIR??'/input',O=process.env.MAKEFUN_OUTPUT_DIR??'/output',U=new Uint8Array(65536);
+const V=new Uint8Array(256);
+for(let o=0;o<8;o++)V[o]=1;
+V[1]=2;V[2]=5;
+for(let o=0x10;o<0x23;o++)if(o!==0x1f)V[o]=1;
+for(let o=0x30;o<0x34;o++)V[o]=3;
+V[0x34]=1;V[0x40]=1;V[0x41]=1;
+for(let o=0x50;o<0x54;o++)V[o]=1;
 let L=0;
 function run(p,q){
  const n=p.length,D=new Int32Array(256),C=new Int32Array(64),M=new Int32Array(256);
@@ -8,9 +15,9 @@ function run(p,q){
  X:for(;;){
   if(t===1e6){code=10;break X}
   if(pc<0||pc>=n){code=9;break X}
-  const op=p[pc];
-  if(!(op<8||op>=0x10&&op<0x23&&op!==0x1f||op>=0x30&&op<0x35||op===0x40||op===0x41||op>=0x50&&op<0x54)){code=5;break X}
-  const im=op===1?1:op===2?4:op>=0x30&&op<0x34?2:0;
+  const op=p[pc],v=V[op];
+  if(!v){code=5;break X}
+  const im=v-1;
   if(pc+im>=n){code=9;break X}
   t++;
   const nx=pc+1+im;
